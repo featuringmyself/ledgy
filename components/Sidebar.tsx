@@ -1,0 +1,136 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useMemo } from "react";
+
+type SubItem = {
+  label: string;
+  href: string;
+};
+
+type MenuItem = {
+  label: string;
+  href: string;
+  children?: SubItem[];
+};
+
+const menuItems: MenuItem[] = [
+  { label: "Dashboard", href: "/dashboard" },
+  {
+    label: "Projects",
+    href: "/projects",
+    children: [
+      { label: "Overview", href: "/projects/overview" },
+      { label: "Reports", href: "/projects/reports" }
+    ]
+  },
+  {
+    label: "Team",
+    href: "/team",
+    children: [
+      { label: "Members", href: "/team/members" },
+      { label: "Roles", href: "/team/roles" }
+    ]
+  },
+  {
+    label: "Settings",
+    href: "/settings",
+    children: [
+      { label: "Profile", href: "/settings/profile" },
+      { label: "Billing", href: "/settings/billing" }
+    ]
+  },
+  { label: "Help", href: "/help" }
+];
+
+function classNames(...classes: Array<string | false | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
+export default function Sidebar() {
+  const pathname = usePathname();
+
+  const expandedLabels = useMemo(() => {
+    const labels = new Set<string>();
+    for (const item of menuItems) {
+      if (pathname === item.href || pathname.startsWith(item.href + "/")) {
+        labels.add(item.label);
+      }
+    }
+    return labels;
+  }, [pathname]);
+
+  return (
+    <aside className="h-screen sticky top-0 w-64 border-r border-black/10 dark:border-white/10 bg-[rgb(250,250,250)] dark:bg-[rgb(15,15,15)]">
+      <div className="px-5 py-4 border-b border-black/10 dark:border-white/10">
+        <div className="text-lg font-semibold tracking-tight">Ledgy</div>
+        <div className="text-xs text-black/60 dark:text-white/50">Navigation</div>
+      </div>
+      <nav className="p-2">
+        <ul className="space-y-1">
+          {menuItems.map((item) => {
+            const isExpanded = expandedLabels.has(item.label);
+            const isActive = pathname === item.href;
+            return (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className={
+                    classNames(
+                      "flex items-center justify-between w-full px-3 py-2 rounded-md transition-colors",
+                      isActive
+                        ? "bg-black text-white dark:bg-white dark:text-black"
+                        : "hover:bg-black/5 dark:hover:bg-white/10"
+                    )
+                  }
+                >
+                  <span className="text-sm font-medium">{item.label}</span>
+                  {item.children && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className={classNames(
+                        "h-4 w-4 transition-transform duration-200",
+                        isExpanded && "rotate-90"
+                      )}
+                    >
+                      <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  )}
+                </Link>
+                {item.children && isExpanded && (
+                  <ul className="mt-1 ml-2 pl-3 border-l border-black/10 dark:border-white/10 space-y-1">
+                    {item.children.map((child) => {
+                      const isChildActive = pathname === child.href;
+                      return (
+                        <li key={child.href}>
+                          <Link
+                            href={child.href}
+                            className={
+                              classNames(
+                                "block px-3 py-1.5 text-sm rounded-md transition-colors",
+                                isChildActive
+                                  ? "bg-black text-white dark:bg-white dark:text-black"
+                                  : "hover:bg-black/5 dark:hover:bg-white/10"
+                              )
+                            }
+                          >
+                            {child.label}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </aside>
+  );
+}
+
+
