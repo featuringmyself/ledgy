@@ -164,7 +164,7 @@ export default function AddProjectPage() {
 
         setMilestones([{ title: "", amount: "", dueDate: "" }]);
       }
-    } catch (error) {
+    } catch {
       alert('Error adding project');
     } finally {
       setLoading(false);

@@ -36,8 +36,7 @@ export default async function PaymentsPage() {
   const pendingPayments = allPayments.filter(p => p.status === 'PENDING');
   const paidPayments = allPayments.filter(p => p.status === 'PAID');
   
-  const totalPending = pendingPayments.reduce((sum, p) => sum + p.amount, 0);
-  const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
+
   
   // Group by currency for display
   const pendingByCurrency = pendingPayments.reduce((acc, p) => {

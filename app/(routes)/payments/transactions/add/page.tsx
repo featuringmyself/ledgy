@@ -9,8 +9,19 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/currency";
 
+interface Payment {
+  id: number;
+  amount: number;
+  project: {
+    name: string;
+    currency: string;
+  };
+  type: string;
+  status: string;
+}
+
 export default function AddTransactionPage() {
-  const [payments, setPayments] = useState([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [formData, setFormData] = useState({
     paymentId: "",
     amount: "",
@@ -20,17 +31,17 @@ export default function AddTransactionPage() {
   });
   const [loading, setLoading] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     fetch("/api/payments")
       .then(res => res.json())
-      .then(data => setPayments(data.filter((p: any) => p.status !== 'PAID')));
+      .then((data: Payment[]) => setPayments(data.filter(p => p.status !== 'PAID')));
   }, []);
 
   const handlePaymentChange = (paymentId: string) => {
-    const payment = payments.find((p: any) => p.id === parseInt(paymentId));
+    const payment = payments.find(p => p.id === parseInt(paymentId));
     setSelectedPayment(payment);
     setFormData({ ...formData, paymentId });
   };
@@ -90,7 +101,7 @@ export default function AddTransactionPage() {
             required
           >
             <option value="">Select a payment</option>
-            {payments.map((payment: any) => (
+            {payments.map((payment: Payment) => (
               <option key={payment.id} value={payment.id}>
                 {payment.project.name} - {payment.type} - {formatCurrency(payment.amount, payment.project.currency)}
               </option>
