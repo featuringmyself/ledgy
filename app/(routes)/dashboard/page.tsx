@@ -1,8 +1,13 @@
 import { ensureUser } from '@/lib/user';
 import prisma from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 
 export default async function DashboardPage() {
   const user = await ensureUser();
+  
+  if (!user) {
+    redirect("/sign-in");
+  }
   
   const [projects, payments, clients] = await Promise.all([
     prisma.project.findMany({
