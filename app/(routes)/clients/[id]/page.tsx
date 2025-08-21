@@ -4,8 +4,9 @@ import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-export default async function ClientDetailPage({ params }: { params: { id: string } }) {
+export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { userId } = await auth();
+  const { id } = await params;
   
   if (!userId) {
     redirect("/sign-in");
@@ -21,7 +22,7 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
   const client = await prisma.client.findFirst({
     where: { 
-      id: parseInt(params.id),
+      id: parseInt(id),
       userId: user.id 
     },
     include: {
