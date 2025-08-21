@@ -137,7 +137,7 @@ export default function AddTransactionPage() {
           <Checkbox
             id="showDetails"
             checked={showDetails}
-            onCheckedChange={setShowDetails}
+            onCheckedChange={(checked) => setShowDetails(checked === true)}
           />
           <Label htmlFor="showDetails">Add payment method and details</Label>
         </div>
