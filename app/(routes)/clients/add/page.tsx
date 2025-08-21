@@ -29,7 +29,7 @@ export default function AddClientPage() {
       } else {
         alert('Error adding client');
       }
-    } catch (error) {
+    } catch {
       alert('Error adding client');
     } finally {
       setLoading(false);

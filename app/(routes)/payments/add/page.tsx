@@ -8,10 +8,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/currency";
 
+interface Project {
+  id: number;
+  name: string;
+  client: {
+    name: string;
+  };
+  currency: string;
+}
+
+interface Milestone {
+  id: number;
+  title: string;
+  amount: number;
+}
+
 export default function AddPaymentPage() {
-  const [projects, setProjects] = useState([]);
-  const [milestones, setMilestones] = useState([]);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState({
     projectId: "",
     type: "ADVANCE",
@@ -31,8 +46,8 @@ export default function AddPaymentPage() {
 
   useEffect(() => {
     if (formData.projectId) {
-      const project = projects.find((p: any) => p.id === parseInt(formData.projectId));
-      setSelectedProject(project);
+      const project = projects.find((p: Project) => p.id === parseInt(formData.projectId));
+      setSelectedProject(project || null);
       
       fetch(`/api/milestones?projectId=${formData.projectId}`)
         .then(res => res.json())
@@ -86,7 +101,7 @@ export default function AddPaymentPage() {
             required
           >
             <option value="">Select a project</option>
-            {projects.map((project: any) => (
+            {projects.map((project: Project) => (
               <option key={project.id} value={project.id}>
                 {project.name} - {project.client.name} ({project.currency})
               </option>
@@ -119,7 +134,7 @@ export default function AddPaymentPage() {
               className="w-full mt-1 p-2 border rounded-md"
             >
               <option value="">Select a milestone</option>
-              {milestones.map((milestone: any) => (
+              {milestones.map((milestone: Milestone) => (
                 <option key={milestone.id} value={milestone.id}>
                   {milestone.title} - {formatCurrency(milestone.amount, selectedProject?.currency || 'USD')}
                 </option>
