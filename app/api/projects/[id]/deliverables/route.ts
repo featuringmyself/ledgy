@@ -54,6 +54,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating deliverable status:', error);
-    return NextResponse.json({ error: error.message || 'Failed to update deliverable status' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to update deliverable status';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
