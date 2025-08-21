@@ -42,7 +42,7 @@ export default function AddTransactionPage() {
 
   const handlePaymentChange = (paymentId: string) => {
     const payment = payments.find(p => p.id === parseInt(paymentId));
-    setSelectedPayment(payment);
+    setSelectedPayment(payment || null);
     setFormData({ ...formData, paymentId });
   };
 
