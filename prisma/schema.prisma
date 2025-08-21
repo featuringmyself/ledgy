@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  clerkId String @unique
+  email String @unique
+  clients Client[]
+  projects Project[]
+}
+
+model Client {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  name String
+  email String @unique
+  phone String
+  projects Project[]
+}
+
+model Project {
+  id Int @id @default(autoincrement())
+  name String
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  client Client @relation(fields: [clientId], references: [id])
+  clientId Int
+  description String
+  startDate DateTime
+  endDate DateTime
+  budget Float
+  currency String @default("USD")
+  deliverables String[]
+  deliverableStatus Boolean[] @default([])
+  completed Boolean @default(false)
+  payments Payment[]
+  milestones PaymentMilestone[]
+}
+
+model Payment {
+  id Int @id @default(autoincrement())
+  project Project @relation(fields: [projectId], references: [id])
+  projectId Int
+  type PaymentType
+  amount Float
+  status PaymentStatus @default(PENDING)
+  dueDate DateTime?
+  paidDate DateTime?
+  description String?
+  transactions Transaction[]
+  milestone PaymentMilestone? @relation(fields: [milestoneId], references: [id])
+  milestoneId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentMilestone {
+  id Int @id @default(autoincrement())
+  project Project @relation(fields: [projectId], references: [id])
+  projectId Int
+  title String
+  description String?
+  amount Float
+  dueDate DateTime
+  status MilestoneStatus @default(PENDING)
+  completedDate DateTime?
+  payments Payment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+  payment Payment @relation(fields: [paymentId], references: [id])
+  paymentId Int
+  amount Float
+  method PaymentMethod
+  reference String?
+  notes String?
+  transactionDate DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+enum PaymentType {
+  ADVANCE
+  MILESTONE
+  FINAL
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CREDIT_CARD
+  PAYPAL
+  CASH
+  CHECK
+  OTHER
+}
+

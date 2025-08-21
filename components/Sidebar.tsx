@@ -21,16 +21,29 @@ const menuItems: MenuItem[] = [
     label: "Projects",
     href: "/projects",
     children: [
+      { label: "Add", href: "/projects/add" },
+      { label: "List", href: "/projects" },
       { label: "Overview", href: "/projects/overview" },
       { label: "Reports", href: "/projects/reports" }
     ]
   },
   {
-    label: "Team",
-    href: "/team",
+    label: "Payments",
+    href: "/payments",
     children: [
-      { label: "Members", href: "/team/members" },
-      { label: "Roles", href: "/team/roles" }
+      { label: "Overview", href: "/payments" },
+      { label: "Create Invoice", href: "/payments/add" },
+      { label: "Milestones", href: "/payments/milestones" },
+      { label: "Transactions", href: "/payments/transactions" },
+      { label: "Record Payment", href: "/payments/transactions/add" }
+    ]
+  },
+  {
+    label: "Clients",
+    href: "/clients",
+    children: [
+      { label: "List", href: "/clients" },
+      { label: "Add", href: "/clients/add" }
     ]
   },
   {
@@ -55,6 +68,16 @@ export default function Sidebar() {
     const labels = new Set<string>();
     for (const item of menuItems) {
       if (pathname === item.href || pathname.startsWith(item.href + "/")) {
+        labels.add(item.label);
+      }
+      // Special case for dynamic routes
+      if (item.href === "/clients" && pathname.match(/^\/clients\/\d+$/)) {
+        labels.add(item.label);
+      }
+      if (item.href === "/projects" && pathname.match(/^\/projects\/\d+$/)) {
+        labels.add(item.label);
+      }
+      if (item.href === "/payments" && pathname.match(/^\/payments\/\d+$/)) {
         labels.add(item.label);
       }
     }
