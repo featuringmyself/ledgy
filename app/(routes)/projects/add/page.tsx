@@ -10,6 +10,7 @@ interface Client {
   id: string;
   name: string;
   email: string;
+  phone?: string;
 }
 
 export default function AddProjectPage() {
@@ -117,9 +118,11 @@ export default function AddProjectPage() {
     }
   }, [user]);
 
-  const filteredClients = clients.filter(client => 
-    client.name.toLowerCase().includes(clientName.toLowerCase())
-  );
+  const filteredClients = clientName.length > 0 
+    ? clients.filter(client => 
+        client.name.toLowerCase().includes(clientName.toLowerCase())
+      )
+    : clients;
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -187,25 +190,35 @@ export default function AddProjectPage() {
               value={clientName}
               onChange={(e) => {
                 setClientName(e.target.value);
-                setShowClientDropdown(e.target.value.length > 0);
+                setShowClientDropdown(true);
               }}
+              onFocus={() => setShowClientDropdown(true)}
               onBlur={() => setTimeout(() => setShowClientDropdown(false), 200)}
               placeholder="Enter client name" 
             />
-            {showClientDropdown && filteredClients.length > 0 && (
-              <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10 max-h-40 overflow-y-auto">
-                {filteredClients.map((client) => (
-                  <div
-                    key={client.id}
-                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      setClientName(client.name);
-                      setShowClientDropdown(false);
-                    }}
-                  >
-                    {client.name}
+            {showClientDropdown && (
+              <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10 max-h-48 overflow-y-auto">
+                {filteredClients.length > 0 ? (
+                  filteredClients.map((client) => (
+                    <div
+                      key={client.id}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setClientName(client.name);
+                        setEmail(client.email || "");
+                        setPhone(client.phone || "");
+                        setShowClientDropdown(false);
+                      }}
+                    >
+                      <div className="font-medium">{client.name}</div>
+                      {client.email && <div className="text-sm text-gray-500">{client.email}</div>}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-gray-500">
+                    {clients.length === 0 ? 'No clients found. Add your first client!' : 'No matching clients'}
                   </div>
-                ))}
+                )}
               </div>
             )}
 

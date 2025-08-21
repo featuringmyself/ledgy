@@ -3,6 +3,7 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { formatCurrency } from "@/lib/currency";
 
 export default async function TransactionsPage() {
   const { userId } = await auth();
@@ -38,7 +39,12 @@ export default async function TransactionsPage() {
     )
   ) || [];
 
-  const totalTransactions = allTransactions.reduce((sum, t) => sum + t.amount, 0);
+  // Group transactions by currency
+  const transactionsByCurrency = allTransactions.reduce((acc, t) => {
+    const currency = t.payment.project.currency;
+    acc[currency] = (acc[currency] || 0) + t.amount;
+    return acc;
+  }, {} as Record<string, number>);
 
   return (
     <div className="p-8 space-y-6">
@@ -54,7 +60,12 @@ export default async function TransactionsPage() {
 
       <div className="bg-white dark:bg-gray-800 rounded-lg border p-4">
         <h3 className="text-sm font-medium text-gray-500">Total Transactions</h3>
-        <p className="text-2xl font-bold text-green-600">${totalTransactions.toLocaleString()}</p>
+        <div className="text-2xl font-bold text-green-600">
+          {Object.entries(transactionsByCurrency).map(([currency, amount]) => (
+            <div key={currency}>{formatCurrency(amount, currency)}</div>
+          ))}
+          {Object.keys(transactionsByCurrency).length === 0 && <div>No transactions</div>}
+        </div>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg border">
@@ -77,7 +88,7 @@ export default async function TransactionsPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-semibold text-green-600">
-                    +${transaction.amount.toLocaleString()}
+                    +{formatCurrency(transaction.amount, transaction.payment.project.currency)}
                   </p>
                   <p className="text-sm text-gray-500">
                     {new Date(transaction.transactionDate).toLocaleDateString()}

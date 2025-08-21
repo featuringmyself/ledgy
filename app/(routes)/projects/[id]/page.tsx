@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { formatCurrency } from "@/lib/currency";
 
 interface Project {
   id: number;
@@ -124,7 +125,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border">
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Budget</h3>
-          <p className="text-2xl font-bold mt-2">{project.currency} {project.budget.toLocaleString()}</p>
+          <p className="text-2xl font-bold mt-2">{formatCurrency(project.budget, project.currency)}</p>
         </div>
         
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border">

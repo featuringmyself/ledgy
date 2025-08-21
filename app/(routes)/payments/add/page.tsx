@@ -6,10 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
+import { formatCurrency } from "@/lib/currency";
 
 export default function AddPaymentPage() {
   const [projects, setProjects] = useState([]);
   const [milestones, setMilestones] = useState([]);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
   const [formData, setFormData] = useState({
     projectId: "",
     type: "ADVANCE",
@@ -29,11 +31,16 @@ export default function AddPaymentPage() {
 
   useEffect(() => {
     if (formData.projectId) {
+      const project = projects.find((p: any) => p.id === parseInt(formData.projectId));
+      setSelectedProject(project);
+      
       fetch(`/api/milestones?projectId=${formData.projectId}`)
         .then(res => res.json())
         .then(data => setMilestones(data));
+    } else {
+      setSelectedProject(null);
     }
-  }, [formData.projectId]);
+  }, [formData.projectId, projects]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +88,7 @@ export default function AddPaymentPage() {
             <option value="">Select a project</option>
             {projects.map((project: any) => (
               <option key={project.id} value={project.id}>
-                {project.name} - {project.client.name}
+                {project.name} - {project.client.name} ({project.currency})
               </option>
             ))}
           </select>
@@ -114,7 +121,7 @@ export default function AddPaymentPage() {
               <option value="">Select a milestone</option>
               {milestones.map((milestone: any) => (
                 <option key={milestone.id} value={milestone.id}>
-                  {milestone.title} - ${milestone.amount}
+                  {milestone.title} - {formatCurrency(milestone.amount, selectedProject?.currency || 'USD')}
                 </option>
               ))}
             </select>
@@ -122,7 +129,7 @@ export default function AddPaymentPage() {
         )}
 
         <div>
-          <Label htmlFor="amount">Amount</Label>
+          <Label htmlFor="amount">Amount {selectedProject && `(${selectedProject.currency})`}</Label>
           <Input
             id="amount"
             type="number"

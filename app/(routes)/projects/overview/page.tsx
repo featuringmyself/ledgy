@@ -3,6 +3,7 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { formatCurrency } from "@/lib/currency";
 
 export default async function ProjectsOverviewPage() {
   const { userId } = await auth();
@@ -69,7 +70,7 @@ export default async function ProjectsOverviewPage() {
                   <p className="text-sm text-gray-500">{project.client.name}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium">{project.currency} {project.budget.toLocaleString()}</p>
+                  <p className="text-sm font-medium">{formatCurrency(project.budget, project.currency)}</p>
                   <span className={`text-xs px-2 py-1 rounded-full ${
                     isCompleted ? 'bg-green-100 text-green-800' :
                     isActive ? 'bg-blue-100 text-blue-800' :

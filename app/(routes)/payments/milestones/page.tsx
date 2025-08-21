@@ -3,6 +3,7 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { formatCurrency } from "@/lib/currency";
 
 export default async function MilestonesPage() {
   const { userId } = await auth();
@@ -64,7 +65,7 @@ export default async function MilestonesPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-semibold">${milestone.amount.toLocaleString()}</p>
+                    <p className="text-lg font-semibold">{formatCurrency(milestone.amount, milestone.project.currency)}</p>
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       isCompleted ? 'bg-green-100 text-green-800' :
                       isOverdue ? 'bg-red-100 text-red-800' :
@@ -75,7 +76,7 @@ export default async function MilestonesPage() {
                     </span>
                     {totalPaid > 0 && (
                       <p className="text-sm text-green-600 mt-1">
-                        Paid: ${totalPaid.toLocaleString()}
+                        Paid: {formatCurrency(totalPaid, milestone.project.currency)}
                       </p>
                     )}
                   </div>

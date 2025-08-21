@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { currentUser } from '@clerk/nextjs/server';
-
-const prisma = new PrismaClient();
+import prisma from './prisma';
 
 export async function ensureUser() {
   const user = await currentUser();

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
+import { formatCurrency } from "@/lib/currency";
 
 export default function AddTransactionPage() {
   const [payments, setPayments] = useState([]);
@@ -91,7 +92,7 @@ export default function AddTransactionPage() {
             <option value="">Select a payment</option>
             {payments.map((payment: any) => (
               <option key={payment.id} value={payment.id}>
-                {payment.project.name} - {payment.type} - ${payment.amount}
+                {payment.project.name} - {payment.type} - {formatCurrency(payment.amount, payment.project.currency)}
               </option>
             ))}
           </select>
@@ -99,7 +100,7 @@ export default function AddTransactionPage() {
 
         <div>
           <div className="flex justify-between items-center">
-            <Label htmlFor="amount">Amount</Label>
+            <Label htmlFor="amount">Amount {selectedPayment && `(${selectedPayment.project.currency})`}</Label>
             {selectedPayment && (
               <Button
                 type="button"
@@ -107,7 +108,7 @@ export default function AddTransactionPage() {
                 size="sm"
                 onClick={fillFullAmount}
               >
-                Fill Full Amount (${selectedPayment.amount})
+                Fill Full Amount ({formatCurrency(selectedPayment.amount, selectedPayment.project.currency)})
               </Button>
             )}
           </div>
