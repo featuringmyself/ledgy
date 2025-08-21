@@ -30,7 +30,7 @@ export default function AddProjectPage() {
   const [loading, setLoading] = useState(false);
   const [paymentType, setPaymentType] = useState("full_upfront");
   const [fullAmount, setFullAmount] = useState("");
-  const [advancePayment, setAdvancePayment] = useState("");
+
   const [milestones, setMilestones] = useState([{ title: "", amount: "", dueDate: "" }]);
   const { user } = useUser();
   const currencies = ["USD", "EUR", "GBP", "INR", "CAD", "AUD", "JPY"];
@@ -161,7 +161,7 @@ export default function AddProjectPage() {
         setDeliverables([""]);
         setPaymentType("full_upfront");
         setFullAmount("");
-        setAdvancePayment("");
+
         setMilestones([{ title: "", amount: "", dueDate: "" }]);
       }
     } catch (error) {

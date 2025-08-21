@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(payment);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to create payment" }, { status: 500 });
   }
 }
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(payments);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch payments" }, { status: 500 });
   }
 }

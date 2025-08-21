@@ -23,7 +23,7 @@ export async function GET() {
     });
 
     return NextResponse.json(user?.projects || []);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
   }
 }

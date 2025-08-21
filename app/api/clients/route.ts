@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(client);
-  } catch (error) {
-    console.error('Error creating client:', error);
+  } catch {
     return NextResponse.json({ error: 'Failed to create client' }, { status: 500 });
   }
 }
@@ -57,8 +56,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(user?.clients || []);
-  } catch (error) {
-    console.error('Error fetching clients:', error);
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 });
   }
 }

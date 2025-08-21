@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(transaction);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to create transaction" }, { status: 500 });
   }
 }
