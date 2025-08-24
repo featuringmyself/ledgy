@@ -171,8 +171,8 @@ export default function AddProjectPage() {
     }
   };
   return (
-    <div className="p-10 flex flex-col items-center">
-      <h1 className="font-semibold text-4xl mb-10">Add Project</h1>
+    <div className="p-4 sm:p-6 lg:p-10 flex flex-col items-center">
+      <h1 className="font-semibold text-2xl sm:text-3xl lg:text-4xl mb-6 sm:mb-8 lg:mb-10">Add Project</h1>
       <div className="grid w-full max-w-2xl items-center gap-4">
         {/* Project Name */}
         <div className="gap-1 flex flex-col">
@@ -225,7 +225,7 @@ export default function AddProjectPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Client Email */}
           <div className="gap-1 flex flex-col">
             <Label htmlFor="email">Email</Label>
@@ -243,7 +243,7 @@ export default function AddProjectPage() {
           <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Project description" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Start Date */}
           <div className="gap-1 flex flex-col">
             <Label htmlFor="startDate">Start Date</Label>
@@ -433,7 +433,7 @@ export default function AddProjectPage() {
         </div>
 
         {/* Submit Button */}
-        <Button className="mt-4" onClick={handleSubmit} disabled={loading}>
+        <Button className="mt-4 w-full sm:w-auto" onClick={handleSubmit} disabled={loading}>
           {loading ? "Adding..." : "Add Project"}
         </Button>
       </div>

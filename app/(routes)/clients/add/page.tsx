@@ -37,8 +37,8 @@ export default function AddClientPage() {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold mb-6">Add Client</h1>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <h1 className="text-xl sm:text-2xl font-semibold mb-6">Add Client</h1>
       
       <form onSubmit={handleSubmit} className="max-w-md space-y-4">
         <div>
@@ -76,7 +76,7 @@ export default function AddClientPage() {
           />
         </div>
 
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" disabled={loading} className="w-full sm:w-auto">
           {loading ? "Adding..." : "Add Client"}
         </Button>
       </form>

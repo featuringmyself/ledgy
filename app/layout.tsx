@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Accounting SaaS for Freelancers & Agencies | Easy Invoicing & Reports",
   description: "Manage invoices, track expenses, and simplify accounting with our SaaS built for freelancers and agencies. Get tax-ready reports, save time, and focus on growing your business.",
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({
@@ -30,9 +31,9 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <div className="min-h-screen flex">
+          <div className="min-h-screen flex flex-col lg:flex-row">
             <Sidebar />
-            <main className="flex-1 min-w-0">
+            <main className="flex-1 min-w-0 w-full">
               {children}
             </main>
           </div>

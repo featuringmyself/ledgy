@@ -22,38 +22,38 @@ export default async function ClientsPage() {
   });
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Clients</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">Clients</h1>
           <p className="text-sm text-black/60 dark:text-white/60 mt-1">Manage your clients</p>
         </div>
         <Link href="/clients/add">
-          <Button>Add Client</Button>
+          <Button className="w-full sm:w-auto">Add Client</Button>
         </Link>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg border">
-        <div className="p-6 border-b">
-          <h2 className="text-lg font-semibold">All Clients</h2>
+        <div className="p-4 sm:p-6 border-b">
+          <h2 className="text-base sm:text-lg font-semibold">All Clients</h2>
         </div>
         <div className="divide-y">
           {user?.clients.length ? user.clients.map((client) => (
-            <Link key={client.id} href={`/clients/${client.id}`} className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">{client.name}</h3>
-                  <p className="text-sm text-gray-500">{client.email}</p>
-                  <p className="text-sm text-gray-500">{client.phone}</p>
+            <Link key={client.id} href={`/clients/${client.id}`} className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors touch-manipulation">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-medium text-sm sm:text-base truncate">{client.name}</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 truncate">{client.email}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 truncate">{client.phone}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{client._count.projects} projects</p>
+                <div className="sm:text-right shrink-0">
+                  <p className="text-xs sm:text-sm font-medium">{client._count.projects} projects</p>
                 </div>
               </div>
             </Link>
           )) : (
-            <div className="p-8 text-center text-gray-500">
-              <p>No clients found. <Link href="/clients/add" className="text-blue-600 hover:underline">Add your first client</Link></p>
+            <div className="p-6 sm:p-8 text-center text-gray-500">
+              <p className="text-sm">No clients found. <Link href="/clients/add" className="text-blue-600 hover:underline">Add your first client</Link></p>
             </div>
           )}
         </div>
