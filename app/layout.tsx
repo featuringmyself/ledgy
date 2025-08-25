@@ -3,6 +3,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import { ClerkProvider } from '@clerk/nextjs';
+import { ToastProvider } from "@/components/toast-provider";
+import { FloatingActionButton } from "@/components/floating-action-button";
+import { QuickActions } from "@/components/quick-actions";
+import { CommandPalette } from "@/components/command-palette";
+import { OfflineIndicator } from "@/components/offline-indicator";
+import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,12 +37,19 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <div className="min-h-screen flex flex-col lg:flex-row">
-            <Sidebar />
-            <main className="flex-1 min-w-0 w-full">
-              {children}
-            </main>
-          </div>
+          <ToastProvider>
+            <KeyboardShortcuts />
+            <CommandPalette />
+            <OfflineIndicator />
+            <div className="min-h-screen flex flex-col lg:flex-row">
+              <Sidebar />
+              <main className="flex-1 min-w-0 w-full">
+                {children}
+              </main>
+              <FloatingActionButton />
+              <QuickActions />
+            </div>
+          </ToastProvider>
         </body>
       </html>
     </ClerkProvider>

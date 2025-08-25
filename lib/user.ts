@@ -14,6 +14,7 @@ export async function ensureUser() {
       data: {
         clerkId: user.id,
         email: user.emailAddresses[0].emailAddress,
+        defaultCurrency: 'INR', // Default to INR for new users
       },
     });
   }

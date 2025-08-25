@@ -15,84 +15,107 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  clerkId String @unique
-  email String @unique
-  clients Client[]
-  projects Project[]
+  id              Int       @id @default(autoincrement())
+  clerkId         String    @unique
+  email           String    @unique
+  defaultCurrency String    @default("INR")
+  clients         Client[]
+  projects        Project[]
 }
 
 model Client {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  name String
-  email String @unique
-  phone String
+  id       Int       @id @default(autoincrement())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   Int
+  name     String
+  email    String    @unique
+  phone    String
   projects Project[]
 }
 
 model Project {
-  id Int @id @default(autoincrement())
-  name String
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  client Client @relation(fields: [clientId], references: [id])
-  clientId Int
-  description String
-  startDate DateTime
-  endDate DateTime
-  budget Float
-  currency String @default("USD")
-  deliverables String[]
-  deliverableStatus Boolean[] @default([])
-  completed Boolean @default(false)
-  payments Payment[]
-  milestones PaymentMilestone[]
+  id                Int                @id @default(autoincrement())
+  name              String
+  user              User               @relation(fields: [userId], references: [id])
+  userId            Int
+  client            Client             @relation(fields: [clientId], references: [id])
+  clientId          Int
+  description       String
+  startDate         DateTime
+  endDate           DateTime
+  budget            Float
+  currency          String             @default("INR")
+  deliverables      String[]
+  deliverableStatus Boolean[]          @default([])
+  completed         Boolean            @default(false)
+  payments          Payment[]
+  milestones        PaymentMilestone[]
 }
 
 model Payment {
-  id Int @id @default(autoincrement())
-  project Project @relation(fields: [projectId], references: [id])
-  projectId Int
-  type PaymentType
-  amount Float
-  status PaymentStatus @default(PENDING)
-  dueDate DateTime?
-  paidDate DateTime?
-  description String?
-  transactions Transaction[]
-  milestone PaymentMilestone? @relation(fields: [milestoneId], references: [id])
-  milestoneId Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   Int               @id @default(autoincrement())
+  project              Project           @relation(fields: [projectId], references: [id])
+  projectId            Int
+  type                 PaymentType
+  amount               Float
+  currency             String            @default("INR")
+  exchangeRate         Float             @default(1.0)
+  amountInBaseCurrency Float?
+  status               PaymentStatus     @default(PENDING)
+  dueDate              DateTime?
+  paidDate             DateTime?
+  description          String?
+  transactions         Transaction[]
+  milestone            PaymentMilestone? @relation(fields: [milestoneId], references: [id])
+  milestoneId          Int?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 }
 
 model PaymentMilestone {
-  id Int @id @default(autoincrement())
-  project Project @relation(fields: [projectId], references: [id])
-  projectId Int
-  title String
-  description String?
-  amount Float
-  dueDate DateTime
-  status MilestoneStatus @default(PENDING)
-  completedDate DateTime?
-  payments Payment[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   Int             @id @default(autoincrement())
+  project              Project         @relation(fields: [projectId], references: [id])
+  projectId            Int
+  title                String
+  description          String?
+  amount               Float
+  currency             String          @default("INR")
+  exchangeRate         Float           @default(1.0)
+  amountInBaseCurrency Float?
+  dueDate              DateTime
+  status               MilestoneStatus @default(PENDING)
+  completedDate        DateTime?
+  payments             Payment[]
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
 }
 
 model Transaction {
-  id Int @id @default(autoincrement())
-  payment Payment @relation(fields: [paymentId], references: [id])
-  paymentId Int
-  amount Float
-  method PaymentMethod
-  reference String?
-  notes String?
-  transactionDate DateTime @default(now())
-  createdAt DateTime @default(now())
+  id                   Int           @id @default(autoincrement())
+  payment              Payment       @relation(fields: [paymentId], references: [id])
+  paymentId            Int
+  amount               Float
+  currency             String        @default("INR")
+  exchangeRate         Float         @default(1.0)
+  amountInBaseCurrency Float?
+  method               PaymentMethod
+  reference            String?
+  notes                String?
+  transactionDate      DateTime      @default(now())
+  createdAt            DateTime      @default(now())
+}
+
+model ExchangeRate {
+  id           Int      @id @default(autoincrement())
+  fromCurrency String
+  toCurrency   String
+  rate         Float
+  date         DateTime @default(now())
+  source       String   @default("manual")
+  createdAt    DateTime @default(now())
+
+  @@unique([fromCurrency, toCurrency, date])
+  @@index([fromCurrency, toCurrency])
 }
 
 enum PaymentType {
@@ -123,4 +146,3 @@ enum PaymentMethod {
   CHECK
   OTHER
 }
-

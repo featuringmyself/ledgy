@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
-
+import logo from "@/public/logo.png"
 type SubItem = {
   label: string;
   href: string;
@@ -88,11 +89,20 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between p-4 border-b border-black/10 dark:border-white/10 bg-[rgb(250,250,250)] dark:bg-[rgb(15,15,15)]">
-        <div className="text-lg font-semibold tracking-tight">Ledgy</div>
+      <div className="lg:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/logo.png"
+            alt="Ledgique"
+            width={32}
+            height={32}
+            className="w-8 h-8 rounded-lg"
+          />
+
+        </div>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 rounded-md hover:bg-black/5 dark:hover:bg-white/10"
+          className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
@@ -107,17 +117,24 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside className={classNames(
-        "bg-[rgb(250,250,250)] dark:bg-[rgb(15,15,15)] border-r border-black/10 dark:border-white/10",
+        "bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 shadow-lg",
         "lg:h-screen lg:sticky lg:top-0 lg:w-64",
         "lg:translate-x-0 transition-transform duration-300 ease-in-out",
         isMobileMenuOpen ? "fixed inset-y-0 left-0 z-50 w-64 translate-x-0" : "fixed inset-y-0 left-0 z-50 w-64 -translate-x-full lg:translate-x-0"
       )}>
-        <div className="px-5 py-4 border-b border-black/10 dark:border-white/10 hidden lg:block">
-          <div className="text-lg font-semibold tracking-tight">Ledgy</div>
-          <div className="text-xs text-black/60 dark:text-white/50">Navigation</div>
+        <div className="px-6 py-6 border-b border-slate-200 dark:border-slate-700 hidden lg:block">
+          <div className="flex items-center gap-3">
+            <Image
+              src={logo}
+              alt="Ledgique"
+
+              className="w-auto h-8 rounded-lg"
+            />
+
+          </div>
         </div>
-        <nav className="p-2 h-full overflow-y-auto">
-          <ul className="space-y-1">
+        <nav className="p-4 h-full overflow-y-auto">
+          <ul className="space-y-2">
             {menuItems.map((item) => {
               const isExpanded = expandedLabels.has(item.label);
               const isActive = pathname === item.href;
@@ -128,10 +145,10 @@ export default function Sidebar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={
                       classNames(
-                        "flex items-center justify-between w-full px-3 py-3 lg:py-2 rounded-md transition-colors touch-manipulation",
+                        "flex items-center justify-between w-full px-4 py-3 rounded-xl transition-all duration-200 touch-manipulation group",
                         isActive
-                          ? "bg-black text-white dark:bg-white dark:text-black"
-                          : "hover:bg-black/5 dark:hover:bg-white/10"
+                          ? "bg-primary text-white"
+                          : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                       )
                     }
                   >
@@ -151,7 +168,7 @@ export default function Sidebar() {
                     )}
                   </Link>
                   {item.children && isExpanded && (
-                    <ul className="mt-1 ml-2 pl-3 border-l border-black/10 dark:border-white/10 space-y-1">
+                    <ul className="mt-2 ml-4 pl-4 border-l-2 border-slate-200 dark:border-slate-700 space-y-1">
                       {item.children.map((child) => {
                         const isChildActive = pathname === child.href;
                         return (
@@ -161,10 +178,10 @@ export default function Sidebar() {
                               onClick={() => setIsMobileMenuOpen(false)}
                               className={
                                 classNames(
-                                  "block px-3 py-2 lg:py-1.5 text-sm rounded-md transition-colors touch-manipulation",
+                                  "block px-3 py-2 text-sm rounded-lg transition-all duration-200 touch-manipulation",
                                   isChildActive
-                                    ? "bg-black text-white dark:bg-white dark:text-black"
-                                    : "hover:bg-black/5 dark:hover:bg-white/10"
+                                    ? "bg-primary/10 text-primary font-medium border-l-2 border-primary"
+                                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                                 )
                               }
                             >

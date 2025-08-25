@@ -1,8 +1,11 @@
 import { ensureUser } from '@/lib/user';
 import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { DashboardContent } from '@/components/dashboard-content';
+import { DashboardSkeleton } from '@/components/dashboard-skeleton';
 
-export default async function DashboardPage() {
+async function DashboardData() {
   const user = await ensureUser();
   
   if (!user) {
@@ -25,13 +28,32 @@ export default async function DashboardPage() {
     prisma.client.count({ where: { userId: user.id } })
   ]);
 
+  // Calculate total revenue using base currency amounts for accurate totals
   const totalRevenue = await prisma.payment.aggregate({
     where: { 
       project: { userId: user.id },
       status: 'PAID'
     },
-    _sum: { amount: true }
+    _sum: { amountInBaseCurrency: true }
   });
+
+  // Convert total revenue from base currency (USD) to user's default currency
+  let convertedTotalRevenue = totalRevenue._sum.amountInBaseCurrency || 0;
+  
+  if (user.defaultCurrency !== 'USD') {
+    // Get the latest exchange rate from USD to user's default currency
+    const exchangeRate = await prisma.exchangeRate.findFirst({
+      where: {
+        fromCurrency: 'USD',
+        toCurrency: user.defaultCurrency
+      },
+      orderBy: { date: 'desc' }
+    });
+    
+    if (exchangeRate) {
+      convertedTotalRevenue = convertedTotalRevenue * exchangeRate.rate;
+    }
+  }
 
   const activeProjects = projects.filter(p => !p.completed).length;
   const pendingPayments = await prisma.payment.count({
@@ -41,84 +63,35 @@ export default async function DashboardPage() {
     }
   });
 
+  // Transform data to match DashboardData interface
+  const dashboardData = {
+    totalRevenue: convertedTotalRevenue,
+    activeProjects,
+    totalClients: clients,
+    pendingPayments,
+    projects: projects.map(project => ({
+      id: project.id.toString(),
+      name: project.name,
+      client: { name: project.client.name },
+      completed: project.completed
+    })),
+    payments: payments.map(payment => ({
+      id: payment.id.toString(),
+      amount: payment.amount,
+      currency: payment.currency,
+      status: payment.status,
+      project: { client: { name: payment.project.client.name } }
+    }))
+  };
+
+  return <DashboardContent initialData={dashboardData} />;
+}
+
+export default function DashboardPage() {
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <h1 className="text-xl sm:text-2xl font-semibold">Dashboard</h1>
-      <p className="text-sm text-black/60 dark:text-white/60 mt-2">Overview of your business</p>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-6 sm:mt-8">
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border">
-          <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</h3>
-          <p className="text-xl sm:text-2xl font-bold mt-2">${totalRevenue._sum.amount?.toFixed(2) || '0.00'}</p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border">
-          <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Active Projects</h3>
-          <p className="text-xl sm:text-2xl font-bold mt-2">{activeProjects}</p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border">
-          <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Clients</h3>
-          <p className="text-xl sm:text-2xl font-bold mt-2">{clients}</p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border">
-          <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Pending Payments</h3>
-          <p className="text-xl sm:text-2xl font-bold mt-2">{pendingPayments}</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8">
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border">
-          <h2 className="text-base sm:text-lg font-semibold mb-4">Recent Projects</h2>
-          {projects.length > 0 ? (
-            <div className="space-y-3">
-              {projects.map(project => (
-                <div key={project.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 border-b last:border-b-0 gap-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-sm sm:text-base truncate">{project.name}</p>
-                    <p className="text-xs sm:text-sm text-gray-500 truncate">{project.client.name}</p>
-                  </div>
-                  <span className={`px-2 py-1 text-xs rounded-full self-start sm:self-center shrink-0 ${
-                    project.completed 
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                      : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                  }`}>
-                    {project.completed ? 'Completed' : 'Active'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 text-sm">No projects yet</p>
-          )}
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border">
-          <h2 className="text-base sm:text-lg font-semibold mb-4">Recent Payments</h2>
-          {payments.length > 0 ? (
-            <div className="space-y-3">
-              {payments.map(payment => (
-                <div key={payment.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 border-b last:border-b-0 gap-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-sm sm:text-base">${payment.amount.toFixed(2)}</p>
-                    <p className="text-xs sm:text-sm text-gray-500 truncate">{payment.project.client.name}</p>
-                  </div>
-                  <span className={`px-2 py-1 text-xs rounded-full self-start sm:self-center shrink-0 ${
-                    payment.status === 'PAID'
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                      : payment.status === 'PENDING'
-                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                  }`}>
-                    {payment.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 text-sm">No payments yet</p>
-          )}
-        </div>
-      </div>
-    </div>
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardData />
+    </Suspense>
   );
 }
 
